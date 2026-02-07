@@ -1,6 +1,7 @@
 package com.auth.service;
 
 import com.auth.dto.AddRolesRequest;
+import com.auth.dto.LoginDto;
 import com.auth.dto.UserRequest;
 import com.auth.dto.UserResponse;
 import com.auth.model.Role;
@@ -9,6 +10,9 @@ import com.auth.repository.RoleRepository;
 import com.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +26,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
 
     public List<String> addRole(AddRolesRequest roles) {
@@ -66,5 +72,24 @@ public class AuthService {
         user.getRoles().forEach(role -> response.getRoles().add(role.getName()));
 
         return response;
+    }
+
+    public String login(LoginDto loginDto) {
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        UsernamePasswordAuthenticationToken token =
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(),loginDto.getPassword());
+
+        try {
+            Authentication authenticate = authenticationManager.authenticate(token);
+
+            if (authenticate.isAuthenticated()) {
+                return jwtService.getTokenByEmailAndRoles(loginDto.getEmail(), authenticate.getAuthorities());
+            }
+        } catch (Exception e) {
+            stringBuilder.append("failed");
+        }
+        return stringBuilder.toString();
     }
 }
