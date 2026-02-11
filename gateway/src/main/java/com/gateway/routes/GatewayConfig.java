@@ -12,7 +12,11 @@ public class GatewayConfig {
     public RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes().route("auth-service",f->f.path("/auth/**")
                 .filters(r->r.rewritePath("/auth/(?<seg>.*)", "/${seg}"))
-                .uri("lb://AUTH")).build();
+                .uri("lb://AUTH"))
+
+                .route("order-service",f->f.path("/order/**")
+                        .filters(r->r.rewritePath("/order/(?<seg>.*)", "/${seg}"))
+                        .uri("lb://ORDER")).build();
     }
 
 }

@@ -27,7 +27,8 @@ public class GatewayFilter implements GlobalFilter, Ordered {
     Map<String,List<String>> protectedPath = Map.of(
             "/auth/auth/admin", List.of("ROLE_ADMIN"),
             "/auth/auth/teacher",List.of("ROLE_TEACHER"),
-            "/auth/auth/both",List.of("ROLE_TEACHER","ROLE_ADMIN")
+            "/auth/auth/both",List.of("ROLE_TEACHER","ROLE_ADMIN"),
+            "/order/order/price",List.of("ROLE_TEACHER","ROLE_ADMIN")
     );
 
     @Override
@@ -63,6 +64,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             return exchange.getResponse().setComplete();
         }
 
+        System.out.print("Hello");
         return chain.filter(exchange);
     }
 

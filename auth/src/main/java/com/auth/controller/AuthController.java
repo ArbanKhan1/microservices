@@ -1,15 +1,15 @@
 package com.auth.controller;
 
-import com.auth.dto.AddRolesRequest;
-import com.auth.dto.LoginDto;
-import com.auth.dto.UserRequest;
-import com.auth.dto.UserResponse;
+import com.auth.dto.*;
 import com.auth.model.User;
+import com.auth.repository.UserRepository;
 import com.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,6 +18,7 @@ import java.util.List;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserRepository userRepository;
 
     @PostMapping("/add-role")
     public ResponseEntity<List<String>> addRoles(@RequestBody AddRolesRequest roles) {
@@ -47,6 +48,15 @@ public class AuthController {
     @GetMapping("/both")
     public ResponseEntity<String> both() {
         return ResponseEntity.ok("HELLO");
+    }
+
+    @GetMapping("/get-user")
+    public ClientDto both(@RequestParam("email") String email) {
+        System.out.print("Get User");
+        List<String> roles = new ArrayList<>();
+         User user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("No user found"));
+         user.getRoles().forEach(role -> roles.add(role.getName()));
+        return new ClientDto(user.getEmail(),user.getPassword(),roles);
     }
 
 }

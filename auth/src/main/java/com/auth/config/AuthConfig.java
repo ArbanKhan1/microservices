@@ -30,7 +30,7 @@ public class AuthConfig {
                     req.requestMatchers("/auth/add-role","/auth/login","/auth/add-user").permitAll();
                     req.requestMatchers("/auth/admin").hasRole("ADMIN");
                     req.requestMatchers("/auth/teacher").hasRole("TEACHER");
-                    req.requestMatchers("/auth/both").hasAnyRole("TEACHER","ADMIN");
+                    req.requestMatchers("/auth/both","/auth/get-user").hasAnyRole("TEACHER","ADMIN");
                     req.anyRequest().authenticated();
                 }).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
